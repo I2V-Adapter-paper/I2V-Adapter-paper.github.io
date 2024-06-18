@@ -1,0 +1,654 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style>
+    .author-link {
+        letter-spacing: -1px;
+    }
+  </style>
+  <title>I2V-Adapter</title>
+  <link href="./files/style.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.4/dist/css/bulma-carousel.min.css" rel="stylesheet"/>
+    <script defer src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.4/dist/js/bulma-carousel.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  </head>
+  
+  <body>
+  <div class="content">
+    <h1><strong>I2V-Adapter: A General Image-to-Video Adapter for Diffusion Models</strong></h1>
+    <h1><strong>SIGGRAPH 2024</strong></h1>
+    <p id="authors">
+      <a href="https://github.com/Space-Xun">Xun Guo<sup>1</sup></a>
+      <a href="https://scholar.google.com/citations?user=MdizB60AAAAJ&hl=zh-CN">Mingwu Zheng<sup>2</sup></a>
+      <a href="https://liang-hou.github.io/">Liang Hou<sup>2</sup></a>
+      <a>Yuan Gao<sup>2</sup></a>
+      <a>Yufan Deng<sup>2</sup></a>
+      <a>Pengfei Wan<sup>2</sup></a>
+      <a>Di Zhang<sup>2</sup></a><br>
+      <a href="https://scholar.google.com/citations?user=CHymRYQAAAAJ&hl=zh-CN">Yufan Liu<sup>3</sup></a>
+      <a href="https://scholar.google.com/citations?user=Wl4tl4QAAAAJ&hl=zh-CN">Weiming Hu<sup>3</sup></a>
+      <a href="https://scholar.google.com/citations?user=gDnBC1gAAAAJ&hl=zh-CN&oi=ao">Zhengjun Zha<sup>1</sup></a>
+      <a href="https://brotherhuang.github.io/">Haibin Huang<sup>2✝</dag></sup></a>
+      <a href="http://www.chongyangma.com/">Chongyang Ma<sup>2</sup></a>
+      <br>
+      <a style="font-size: 0.7em"><sup>✝</sup>Corresponding Author.</a>
+      <br>
+      <span style="font-size: 0.8em; margin-top: 0.5em">
+        <a><sup>1</sup>University of Science and Technology of China</a>
+        <a><sup>2</sup>Kuaishou Technology</a><br>
+        <a><sup>3</sup>Institute of Automation, Chinese Academy of Sciences</a>
+      </span>
+    </p>
+    <br>
+    <div class="gallery">
+      <div class="row">
+      <figure style="width: 100%;margin: auto 0;">
+        <img src="./files/gifs/teaser1.gif">
+        <figcaption style="text-align: center;">I2V-Adapter</figcaption>
+      </figure>
+      <figure style="width: 100%;margin: auto 0;">
+        <img src="./files/gifs/teaser3.gif">
+        <figcaption style="text-align: center;">w/ Personalized T2I</figcaption>
+      </figure>
+      <figure style="width: 100%;margin: auto 0;">
+        <img src="./files/gifs/teaser2.gif">
+        <figcaption style="text-align: center;">w/ ControlNet</figcaption>
+      </figure>
+      </div>
+    </div>
+    <font size="+2">
+      <p style="text-align: center;">
+        <a href="https://arxiv.org/abs/2312.16693" target="_blank">[Paper]</a> &nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="files/bibtex.txt" target="_blank">[BibTeX]</a>
+      </p>
+    </font>
+  </div>
+
+  <div class="content">
+    <h2 style="text-align: center;"><strong>Additional Results</strong></h2>
+    <div class="gallery">
+      <h3><strong>Ablation Study on model design</strong></h3>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/ablation.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/all.gif">
+          <figcaption style="text-align: center;">Full model</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/ablation.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/noip.gif">
+          <figcaption style="text-align: center;">w/o Content-Adapter</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/ablation.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/noi2v.gif">
+          <figcaption style="text-align: center;">w/o I2V-Adapter</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/ablation.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/noi2v_noip.gif">
+          <figcaption style="text-align: center;">w/o both</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_1.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/sample1.gif">
+          <figcaption style="text-align: center;">Full model</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_1.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/sample1_noip.gif">
+          <figcaption style="text-align: center;">w/o Content-Adapter</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_1.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/sample1_noi2v.gif">
+          <figcaption style="text-align: center;">w/o I2V-Adapter</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_1.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/sample1_noip_noi2v_replace.gif">
+          <figcaption style="text-align: center;">w/o both</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_2.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/sample2.gif">
+          <figcaption style="text-align: center;">Full model</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_2.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/sample2_noip.gif">
+          <figcaption style="text-align: center;">w/o Content-Adapter</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_2.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/sample2_noi2v.gif">
+          <figcaption style="text-align: center;">w/o I2V-Adapter</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/revision_ablation_2.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/sample2_noip_noi2v_replace.gif">
+          <figcaption style="text-align: center;">w/o both</figcaption>
+        </figure>
+      </div>
+      <h3><strong>Ablation Study on Frame Similarity Prior</strong></h3>
+            <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p1_5.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.6, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p2_5.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.8, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p3_5.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=1.0, p=1.0</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p1_1.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.6, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p2_1.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.8, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p3_1.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=1.0, p=1.0</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p1_3.gif">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.6, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p2_3.gif">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.8, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p3_3.gif">
+          <figcaption style="text-align: center;">t<sub>0</sub>=1.0, p=1.0</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p1_4.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.6, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p2_4.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.8, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p3_4.gif" style="width:100%;">
+          <figcaption style="text-align: center;">t<sub>0</sub>=1.0, p=1.0</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p1_6.gif">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.6, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p2_6.gif">
+          <figcaption style="text-align: center;">t<sub>0</sub>=0.8, p=1.0</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/p3_6.gif">
+          <figcaption style="text-align: center;">t<sub>0</sub>=1.0, p=1.0</figcaption>
+        </figure>
+      </div>
+      <h3><strong>With Personalized T2I models</strong></h3>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/20.jpg">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/20.gif">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/22.jpg">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/22.gif">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+      </div>
+      <br>
+      <div class="row">
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/24.jpg">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/gifs/24.gif">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+        <figure style="width: 100%;margin: auto 0;">
+          <img src="./files/input_imgs/25.jpg">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+        <figure style="width: 100%; margin: auto 0;">
+          <img src="./files/gifs/25.gif">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+      </div>
+      <h3><strong>With ControlNet</strong></h3>
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/input_imgs/c3.jpg" style="width:100%;">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/c3_pose.gif" style="width:100%;">
+          <figcaption style="text-align: center;">Pose Sequence</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/c3.gif" style="width:100%;">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+      </div>
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/input_imgs/c1.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/c1_pose.gif">
+          <figcaption style="text-align: center;">Pose Sequence</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/c1.gif">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+      </div>    
+      <div class="row">
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/input_imgs/c2.jpg">
+          <figcaption style="text-align: center;">Input Image</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/c2_pose.gif">
+          <figcaption style="text-align: center;">Pose Sequence</figcaption>
+        </figure>
+        <figure style="width: 25%;margin: auto 0;">
+          <img src="./files/gifs/c2.gif">
+          <figcaption style="text-align: center;">&nbsp;</figcaption>
+        </figure>
+      </div>
+      <h3><strong>More results (Left: input image; Right: output video)</strong></h3>
+      <div class="gallery">
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/13.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/13.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/17.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/17.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/5.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/5.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/14.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/14.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/4.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/4.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/10.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/10.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/3.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/3.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/6.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/6.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/7.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/7.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/1.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/1.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/9.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/9.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/8.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/8.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/15.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/15.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/18.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/18.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_10.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_10.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_12.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_12.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_11.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_11.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_17.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_17.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_13.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_13.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_14.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_14.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_16.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_16.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_18.jpg">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_18.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_1.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_1.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_9.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_9.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_3.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_3.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_4.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_4.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_5.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_5.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_6.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_6.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_7.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_7.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_8.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_8.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_19.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_19.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_2.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_2.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+        <div class="row">
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_20.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/gifs/revision_20.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%;margin: auto 0;">
+            <img src="./files/input_imgs/revision_final.png">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+          <figure style="width: 100%; margin: auto 0;">
+            <img src="./files/gifs/revision_final.gif">
+            <figcaption style="text-align: center;">&nbsp;</figcaption>
+          </figure>
+        </div>
+    </div>
+  </div>
+    <script>
+      var gifImage = document.getElementById('gif-image');
+  
+      gifImage.addEventListener('click', function() {
+        if (gifImage.classList.contains('playing')) {
+          gifImage.classList.remove('playing');
+          gifImage.src = gifImage.src;
+        } else {
+          gifImage.classList.add('playing');
+          gifImage.src = gifImage.src;
+        }
+      });
+    </script>
+  </body></html>
+  
